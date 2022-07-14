@@ -18,7 +18,7 @@ const chatModel = new mongoose.Schema(
         //group chat - >=2 users
         users:[{
             //this will contain the id to that particular user
-            //which is being referenced fron the User model
+            //which is being referenced from the User model
             type:mongoose.Schema.Types.ObjectId,
             ref: "User"
         }],
@@ -26,7 +26,7 @@ const chatModel = new mongoose.Schema(
         latestMessage:{
             type:mongoose.Schema.Types.ObjectId,
             //it is going to be referring the the particular part of the 
-            //database where the message is being stored
+            //database where the message is being stored, //Message model
             ref:"Message"
         },
         groupAdmin:{

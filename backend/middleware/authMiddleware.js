@@ -45,8 +45,13 @@ const asyncHandler = require('express-async-handler');
 const protect = asyncHandler(async (req, res, next) => {
   let token;
 
+  //before moving to the requests, the http request has to go through this custom middleware that has been made and added
   if (
+
+    //this means that if we r sending some token in the headers 
     req.headers.authorization &&
+
+    //Bearer is the key for the token
     req.headers.authorization.startsWith("Bearer")
   ) {
     try {
@@ -55,7 +60,7 @@ const protect = asyncHandler(async (req, res, next) => {
       //decodes token id
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = await User.findById(decoded.id).select("password");
+      req.user = await User.findById(decoded.id).select("-password");
 
       next();
     } catch (error) {
