@@ -10,7 +10,7 @@ const chatarea = [
             }
         ],
         "id":1,
-        "chatName":"Group1"
+        "chatName":"First Chat"
     },
     {
         "isGroupChat":1,
@@ -23,7 +23,7 @@ const chatarea = [
             }
         ],
         "id":2,
-        "chatName":"Group2"
+        "chatName":"Second Chat"
     }
 ]
 
