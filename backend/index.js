@@ -61,7 +61,7 @@ app.post('/api/user',asyncHandler(async(req,res)=>{
                 email: user.email,
                 password: user.password,
                 pic: user.pic,
-                token: generateToken(user.id)
+                token: generateToken(user._id)
             })
         }
         else{
@@ -83,7 +83,7 @@ app.get('/api/user',protect,asyncHandler(async(req,res)=>{
         $or : [{
             //we are searching inside their name
             
-
+            //from the mongoose docs
             //format - { <field>: { $regex: /pattern/, $options: '<options>' } }
             // { <field>: { $regex: 'pattern', $options: '<options>' } }
             // { <field>: { $regex: /pattern/<options> } }
