@@ -36,11 +36,11 @@ userModel.methods.matchPassword = async function(enteredPassword){
 
 //before saving, what it should do... thats why we used pre
 //next because its going to be a middleware
-userModel.pre("save", async function(next)
+userModel.pre("save", async function(next) //next because its a middleware
     //if the current password is not modified, then moveon to the next
     //means dont run the code after it
     {if(!this.isModified){
-    next();
+    next(); //means do not run the code after it
 }
 
 //else we will generate the new password

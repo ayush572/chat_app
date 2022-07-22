@@ -10,6 +10,7 @@ const asyncHandler = require('express-async-handler');
 const { protect } = require('./middleware/authMiddleware');
 const Chat = require('./model/chatModel');
 const User = require('./model/userModel');
+
 dotenv.config();
 connectDB();
 const app = express();
@@ -37,7 +38,7 @@ app.post('/api/user',asyncHandler(async(req,res)=>{
     const {name, password, email, pic} = req.body;
     if( !name && !password && !email){
         res.status(400);
-        throw new Error('Please enter all the Fields')
+        throw new Error('Please enter all the required Fields')
     }
     
     //this is a mongodb query to find if the user exists in the database
@@ -57,6 +58,7 @@ app.post('/api/user',asyncHandler(async(req,res)=>{
         if(user){
             //here we r sending this data to the user
             res.status(201).json({
+                _id: user._id,
                 name: user.name,
                 email: user.email,
                 password: user.password,
@@ -112,15 +114,16 @@ app.post('/api/user/login',asyncHandler(async(req,res)=>{
     console.log(userExists);
     if(userExists && (await userExists.matchPassword(password))){
         res.status(201).json({
+            _id: userExists._id,
             name: userExists.name,
             email: userExists.email,
             // password: userExists.password,
             pic: userExists.pic,
-            token: generateToken(userExists.id)
+            token: generateToken(userExists._id)
         })
     }
     else{
-            res.status(400);
+            res.status(401);
             throw new Error('Invaild Credentials');
     }
 
@@ -145,12 +148,12 @@ app.post('/api/chat',protect,asyncHandler(async(req,res)=>{
         $and:[
             //users is the users array in the chat model
             //we want to find the current user who is logged in and the userId that we are provided with
-            {users:{$elemMatch:{$eq:req.user.id} }}, //current user logged in
+            {users:{$elemMatch:{$eq:req.user._id} }}, //current user logged in
             {users:{$elemMatch:{$eq:req.userId} }}, //equal to userId that we got from the body
         ]
         //-password -> means except password, we are going to populate the isChat wih all the user info from userModel.js
     }).populate("users","-password")
-    .populate("latestMessage") //we are also populating the latestmessage from messageModel.js
+    .populate("latestMessage") //we are also populating/joining the latestmessage from messageModel.js
 
 
     //Now it will have all the file data inside of our chat, i.e isChat
@@ -191,8 +194,9 @@ app.post('/api/chat',protect,asyncHandler(async(req,res)=>{
 }));
 
 //2)to fetch the data from the db for a particular user for all his chats
-app.get('/api/chat',protect,asyncHandler(async(req,res)=>{
+app.get('/api/chat',asyncHandler(async(req,res)=>{
 
+    console.log(req.user);
     //only thing we need to do is that, we have to check that which user is logged in and query for that chat
     try {
         //we are going to search through all of the chats in our database
@@ -214,7 +218,7 @@ app.get('/api/chat',protect,asyncHandler(async(req,res)=>{
         })
     } catch (error) {
         res.status(400);
-            throw new Error(err.message);
+            throw new Error(error.message);
     }
 }))
 
